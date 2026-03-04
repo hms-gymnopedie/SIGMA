@@ -1,0 +1,78 @@
+Metadata-Version: 2.4
+Name: sigma
+Version: 0.1.0
+Summary: SIGMA: Site Imagery to Geometric Map Automation
+Author-email: User <user@example.com>
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: opencv-python>=4.8.0
+Requires-Dist: open3d>=0.17.0
+Requires-Dist: typer>=0.9.0
+Requires-Dist: pydantic>=2.4.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: tqdm>=4.66.0
+Provides-Extra: server
+Requires-Dist: pycolmap>=0.6.0; extra == "server"
+Requires-Dist: gsplat>=0.1.0; extra == "server"
+Requires-Dist: plyfile>=1.0.0; extra == "server"
+Requires-Dist: tensorboard>=2.14.0; extra == "server"
+Requires-Dist: torch>=2.0.0; extra == "server"
+Requires-Dist: torchvision>=0.15.0; extra == "server"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: black>=23.9.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+
+# SIGMA: Site Imagery to Geometric Map Automation
+
+**SIGMA** is an end-to-end framework for automatically generating 2D floorplans and 3D digital twins from industrial site video footage.
+
+## Features
+
+- **Automated Frame Extraction**: Process video footage into optimal image sequences.
+- **High-Quality 3D Reconstruction**: Utilizes 3D Gaussian Splatting for photorealistic 3D models.
+- **2D Floorplan Generation**: Automatically generates occupancy maps and 2D floorplans from 3D data.
+- **Hybrid Architecture**: Runs preprocessing and mapping on local machines (e.g., Mac), and heavy computation (COLMAP, Training) on GPU servers.
+
+## Installation
+
+### Local (Mac/PC)
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e "."
+```
+
+### Server (GPU)
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[server]"
+```
+
+## Usage
+
+Please refer to the implementation plan for detailed usage instructions.
+
+```bash
+# Local: Extract frames
+sigma extract-frames --video input.mp4 --output ./frames
+
+# (Manual Step: Upload frames to server)
+
+# Server: Run COLMAP
+python -m sigma.sfm.colmap_runner --image_dir ./frames --output_dir ./colmap_out
+
+# Server: Run 3DGS Training
+python -m sigma.gaussian_splatting.trainer --colmap_dir ./colmap_out --output_dir ./gs_model
+
+# (Manual Step: Download model to local)
+
+# Local: Generate Map
+sigma generate-map --model ./gs_model --output ./maps
+```

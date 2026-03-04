@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sigma"
+version = "0.1.0"
+description = "SIGMA: Site Imagery to Geometric Map Automation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "User", email = "user@example.com"}
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "opencv-python>=4.8.0",
+    "open3d>=0.17.0",
+    "typer>=0.9.0",
+    "pydantic>=2.4.0",
+    "pyyaml>=6.0",
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+server = [
+    "pycolmap>=0.6.0",
+    "gsplat>=0.1.0",
+    "plyfile>=1.0.0",
+    "tensorboard>=2.14.0",
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.9.0",
+    "isort>=5.12.0",
+    "mypy>=1.5.0",
+]
+
+[project.scripts]
+sigma = "sigma.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]

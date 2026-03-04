@@ -1,0 +1,40 @@
+# SIGMA Configuration
+
+preprocessor:
+  extraction_fps: 2
+  max_dimension: 1920
+  blur_threshold: 100.0
+  dedup_hash_size: 16
+  dedup_threshold: 5
+
+sfm:
+  feature_type: "sift"
+  matching_type: "sequential"
+  match_overlap: 10
+  min_num_matches: 15
+  use_gpu: true
+
+gaussian_splatting:
+  iterations: 30000
+  learning_rate:
+    position: 0.00016
+    opacity: 0.05
+    scaling: 0.005
+    rotation: 0.001
+    sh: 0.0025
+  densify_from_iter: 500
+  densify_until_iter: 15000
+  densify_grad_threshold: 0.0002
+  opacity_reset_interval: 3000
+  sh_degree: 3
+
+map_2d:
+  z_slice_min: 0.5
+  z_slice_max: 2.0
+  resolution: 0.05
+  occupancy_threshold: 3
+  morphology_kernel_size: 5
+  boundary_method: "canny"
+
+map_3d:
+  export_format: "ply"
