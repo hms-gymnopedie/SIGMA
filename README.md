@@ -7,7 +7,7 @@
 - **Automated Frame Extraction**: Process video footage into optimal image sequences.
 - **High-Quality 3D Reconstruction**: Utilizes 3D Gaussian Splatting for photorealistic 3D models.
 - **2D Floorplan Generation**: Automatically generates occupancy maps and 2D floorplans from 3D data.
-- **Hybrid Architecture**: Runs preprocessing and mapping on local machines (e.g., Mac), and heavy computation (COLMAP, Training) on GPU servers.
+- **Flexible Architecture**: Run everything on a single GPU server, or split between local (Mac) and server environments.
 
 ## Installation
 
@@ -47,7 +47,21 @@ Depending on your server's GPU driver and CUDA version, you may need to install 
 
 ## Usage
 
-Please refer to the implementation plan for detailed usage instructions.
+### Server-Only (Full Pipeline)
+
+Run the entire pipeline on a single GPU server — no file transfer needed:
+
+```bash
+# One command: video → frames → COLMAP → 3DGS → maps
+sigma run-all --video input.mp4 --output ./results
+
+# Or via shell script
+./scripts/run_pipeline.sh input.mp4 ./results
+```
+
+### Hybrid (Local ↔ Server)
+
+Split work between your Mac and a GPU server:
 
 ```bash
 # Local: Extract frames
@@ -64,5 +78,5 @@ python -m sigma.gaussian_splatting.trainer --colmap_dir ./colmap_out --output_di
 # (Manual Step: Download model to local)
 
 # Local: Generate Map
-sigma generate-map --model ./gs_model --output ./maps
+sigma generate-map --model ./gs_model/point_cloud.ply --output ./maps
 ```

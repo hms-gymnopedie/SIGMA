@@ -7,7 +7,7 @@
 - **자동 프레임 추출**: 영상에서 최적의 이미지 시퀀스를 자동으로 추출합니다 (블러/중복 제거 포함).
 - **고품질 3D 복원**: 3D Gaussian Splatting을 활용하여 사실적인 3D 모델을 생성합니다.
 - **2D 평면도 생성**: 3D 데이터로부터 Occupancy Map 기반 2D 평면도를 자동 생성합니다.
-- **하이브리드 아키텍처**: 전처리/맵 생성은 로컬 Mac에서, GPU 연산(COLMAP, 학습)은 서버에서 수행합니다.
+- **유연한 아키텍처**: GPU 서버 단독으로 전 과정을 실행하거나, 로컬(Mac)과 서버를 나누어 실행할 수 있습니다.
 
 ## 기술 스택
 
@@ -54,7 +54,8 @@ sigma/
 │   └── default.yaml          # 기본 설정 파일
 ├── scripts/
 │   ├── run_colmap.sh         # 서버용 COLMAP 실행 스크립트
-│   └── run_train.sh          # 서버용 3DGS 학습 스크립트
+│   ├── run_train.sh          # 서버용 3DGS 학습 스크립트
+│   └── run_pipeline.sh       # 서버 단독 전체 파이프라인 스크립트
 ├── src/sigma/
 │   ├── cli.py                # CLI 엔트리 포인트
 │   ├── config.py             # Pydantic 설정 모델
@@ -77,6 +78,22 @@ sigma/
 ```
 
 ## 빠른 시작
+
+### 서버 단독 실행 (전체 파이프라인)
+
+GPU 서버에서 비디오부터 맵 생성까지 한 번에 실행합니다. 파일 전송이 필요 없습니다.
+
+```bash
+# 하나의 명령어로 전체 파이프라인 실행
+sigma run-all --video input.mp4 --output ./results
+
+# 또는 셸 스크립트 사용
+./scripts/run_pipeline.sh input.mp4 ./results
+```
+
+### 하이브리드 실행 (로컬 ↔ 서버)
+
+로컬 Mac과 GPU 서버를 나누어 실행합니다.
 
 ```bash
 # 1. 로컬: 프레임 추출

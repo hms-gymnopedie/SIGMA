@@ -1,6 +1,6 @@
 # SIGMA 실행 가이드
 
-이 문서는 SIGMA 파이프라인을 **로컬 Mac**과 **학교 서버(GPU)** 간에 나누어 실행하는 방법을 단계별로 설명합니다.
+이 문서는 SIGMA 파이프라인의 실행 방법을 설명합니다. **GPU 서버 하나에서 모든 단계를 실행**하거나, **로컬 Mac**과 **학교 서버(GPU)** 간에 나누어 실행할 수 있습니다.
 
 ---
 
@@ -33,7 +33,7 @@ source .venv/bin/activate
 uv pip install -e ".[server]"   # 서버 의존성 설치 (pycolmap, gsplat, torch 등)
 
 # 실행 스크립트에 실행 권한 부여
-chmod +x scripts/run_colmap.sh scripts/run_train.sh
+chmod +x scripts/run_colmap.sh scripts/run_train.sh scripts/run_pipeline.sh
 ```
 
 ### SSH 접속 확인
@@ -43,7 +43,56 @@ ssh user@서버주소
 
 ---
 
-## 파이프라인 단계
+## 방법 A: 서버 단독 실행 (권장)
+
+GPU 서버에서 모든 단계를 한 번에 실행합니다. 파일 전송이 필요 없습니다.
+
+```bash
+ssh user@서버주소
+cd ~/sigma_workspace/sigma
+source .venv/bin/activate
+```
+
+### CLI 사용
+
+```bash
+sigma run-all \
+    --video ~/data/현장영상.mp4 \
+    --output ~/sigma_workspace/project_001
+```
+
+### 셸 스크립트 사용
+
+```bash
+./scripts/run_pipeline.sh \
+    ~/data/현장영상.mp4 \
+    ~/sigma_workspace/project_001
+```
+
+**출력 구조:**
+```
+project_001/
+├── frames/          # 추출된 비디오 프레임
+├── colmap_out/      # COLMAP sparse 복원 결과
+├── gs_model/        # 학습된 3DGS 모델 (point_cloud.ply)
+└── maps/            # 생성된 2D/3D 맵
+    ├── occupancy_map.png
+    └── model_export.ply
+```
+
+> **팁**: `tmux`를 사용하면 SSH 연결이 끊겨도 파이프라인이 계속 실행됩니다.
+> ```bash
+> tmux new -s sigma
+> sigma run-all --video ... --output ...
+> # Ctrl+B, D로 세션 분리
+> # tmux attach -t sigma 로 복귀
+> ```
+
+---
+
+## 방법 B: 하이브리드 실행 (로컬 ↔ 서버)
+
+로컬 Mac과 GPU 서버를 나누어 실행합니다.
 
 ### 1단계. 로컬: 영상에서 프레임 추출
 

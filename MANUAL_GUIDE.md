@@ -1,6 +1,6 @@
 # SIGMA Manual Execution Guide
 
-This guide explains how to run the SIGMA pipeline step-by-step, manually handling the transfer between your **Local Mac** and **School Server**.
+This guide explains how to run the SIGMA pipeline. You can either run **everything on a single GPU server**, or split the work between your **Local Mac** and **School Server**.
 
 ## Prerequisites
 
@@ -31,7 +31,56 @@ chmod +x scripts/run_colmap.sh scripts/run_train.sh
 
 ---
 
-## Pipeline Steps
+## Option A: Server-Only Pipeline (Recommended)
+
+Run the entire pipeline on a single GPU server with one command. No file transfer needed.
+
+```bash
+ssh user@server_address
+cd ~/sigma_workspace/sigma
+source .venv/bin/activate
+```
+
+### Using the CLI
+
+```bash
+sigma run-all \
+    --video ~/data/site_video.mp4 \
+    --output ~/sigma_workspace/project_001
+```
+
+### Using the Shell Script
+
+```bash
+./scripts/run_pipeline.sh \
+    ~/data/site_video.mp4 \
+    ~/sigma_workspace/project_001
+```
+
+**Output structure:**
+```
+project_001/
+├── frames/          # Extracted video frames
+├── colmap_out/      # COLMAP sparse reconstruction
+├── gs_model/        # Trained 3DGS model (point_cloud.ply)
+└── maps/            # Generated 2D/3D maps
+    ├── occupancy_map.png
+    └── model_export.ply
+```
+
+> **Tip**: Use `tmux` to keep the pipeline running if you disconnect.
+> ```bash
+> tmux new -s sigma
+> sigma run-all --video ... --output ...
+> # Ctrl+B, D to detach
+> # tmux attach -t sigma to reconnect
+> ```
+
+---
+
+## Option B: Hybrid Pipeline (Local ↔ Server)
+
+Split the work between your Mac and a GPU server.
 
 ### 1. Local: Extract Frames from Video
 
